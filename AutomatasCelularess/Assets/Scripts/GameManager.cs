@@ -36,12 +36,14 @@ public class GameManager : MonoBehaviour
 
     void Update()
     {
+        // Wait for the generate button to be pressed and then generate the CA.
         if(generate == true && rowCount < rows) {
             rowCount ++;
             int[] nextCells = new int [cols];
             nextCellsY --;
             nextCells[0] = cells[0];
             nextCells[cells.Length - 1] = cells[cells.Length - 1];
+            // Check each cell neighborhood to get the next cell state.
             for (int i = 1; i < cells.Length - 1; i++)
             {
                 int left = cells[i - 1];
@@ -51,6 +53,8 @@ public class GameManager : MonoBehaviour
                 nextCells [i] = newState;
             }
             cells = nextCells;
+
+            // Instantiate the game object cells.
             for (int i = 0; i < cells.Length; i++)
             {
                 foreach (var n in cells)
@@ -72,6 +76,9 @@ public class GameManager : MonoBehaviour
         
     } 
 
+/*  Get info from UI and give values to each variable. Get the CA rule and convert it to binary, 
+    then take the binary number and put it into an array,then pass it to CalcState to read the
+    rule in binary and return the cell state */
    public void GenerateCA(){
     rows = int.Parse(sizeX_IF.text);
     generate = true;
@@ -86,6 +93,7 @@ public class GameManager : MonoBehaviour
  
     binaryRule = Convert.ToString(inputRule, 2).PadLeft(8, '0');
     rule = new int [binaryRule.Length];
+
     for (int i = 0; i < binaryRule.Length; i++)
     {
         rule[i] = int.Parse(binaryRule[i].ToString());
@@ -93,6 +101,11 @@ public class GameManager : MonoBehaviour
         Debug.Log(rule[0] + ", " + rule[1] + ", " + rule[2] + ", " + rule[3] + ", " + rule[4] + ", " + rule[5] + ", " + rule[6] + ", " + rule[7]);
 
     }
+
+    /* Get the neighborhood of the cell and the binary rule.
+       Check the neighborhood and return the state of the cell
+        based on the binary rule.
+    */
     int CalcState(int l, int s, int r, int[] binRule){
         if (l == 1 && s == 1 && r ==1) {
             return binRule[0]; 
@@ -118,11 +131,11 @@ public class GameManager : MonoBehaviour
         else if (l == 0 && s == 0 && r == 0) {
             return binRule[7]; 
         } else {
-           // Debug.Log ("l " + l + " s " + s + " r " + r);
             return 2;
         }
     }
 
+    //  Initialize the cells with 0s and 1s randomly or put a single 1 in the middle of the grid
     void CreateCells(){
         for (int i = 0; i < cols; i++)
         {
@@ -139,6 +152,7 @@ public class GameManager : MonoBehaviour
             }
             
         } 
+        // Fill the cells with 0s and put a single 1 in the middle of the cells, if random start is false
         if(randomStart == false){
             cells[cols/2] = 1;
         }
